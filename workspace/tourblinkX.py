@@ -1,56 +1,73 @@
+#To use this script please follow the Readme file in the folder
 import pyrebase
+import os
 
+# Config to connect to the app
 config = {
-  "apiKey": "AIzaSyD4bR4ftpXUfVrnj12xQ8OU_TrDR-z6398",
-  "authDomain": "tourblink.firebaseapp.com",
-  "databaseURL": "https://tourblink.firebaseio.com",
-  "storageBucket": "tourblink.appspot.com",
-  "messagingSenderId": "19313768876"
+  "apiKey": "**************************",
+  "authDomain": "***************************",
+  "databaseURL": "***********************",
+  "storageBucket": "****************",
+  "messagingSenderId": "**********"
 }
-
-# config = {
-#     "apiKey": "AIzaSyBXskeikWr_uDkIEmOl21YnO2zonlzIlUI",
-#     "authDomain": "prueba-a4679.firebaseapp.com",
-#     "databaseURL": "https://prueba-a4679.firebaseio.com",
-#     "storageBucket": "prueba-a4679.appspot.com",
-#     "messagingSenderId": "454315014961"
-# }
+# We initialize the app with this using the config
 firebase = pyrebase.initialize_app(config)
+# We use those variables to have access to the services in this case database or storage
 databaseTourBlink = firebase.database()
-auth = firebase.auth()
-user = auth.sign_in_with_email_and_password("javierborregocejudo@gmail.com", "javier")
-valuesDatabase = databaseTourBlink.child("Items").child("data").get()
-value = 0
-
 storageTourBlink = firebase.storage()
 
-for key, list_item in valuesDatabase.__dict__.iteritems():
-    if key == "pyres":
-        for item in list_item:
-            value+=1
-            print item.val()
-            folderPathImg = storageTourBlink.child(str(item.val()))
-            #no hace falta porque ya tenemos el valor del archivo en
-            ext_item = str(value)[5:]
-            name_item = str(value)[:10]
-            folderPathImg.download(name_item+ext_item)         
 
-            print item
+#Functions to use in the script
 
-# db = firebase.database()
-
-# data to save
-# data = {
-#     "name": "Mortimer 'Morty' Smith"
-# }
-
-# Pass the user's idToken to the push method
-# results = db.child("users").push(data, user['idToken'])
+# def for calculate_progress in the download
+def calculate_progress(list_of_item, number_item):
+    progress = float(number_item)/(len(list_item))*100
+    return progress
+#List of values will be pulled from the database
 #
+def get_all_ref_folder():
+  folders_name_database = []
+  values_database = databaseTourBlink.child("Items").get()
+  for key, list_item in values_database.__dict__.iteritems():
+    if key == 'pyres':
+      for item in list_item:
+        folders_name_database.append(item.key())
+  return folders_name_database
 
-# storageTourBlink = firebase.storage()
-# folderPathImg = storageTourBlink.child("LOU_20170312_192755_Android SDK built for x86/data/loremipsum.json")
-# folderPathImg.download("jsonDescargado.json")
+def download_from_storage(folders):
+  for folder in folders:
+    #Create the folder if it is not created
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    # number of items we are counting inside of the loop
+    number_item = 0
+    # Percentage of progress in the download
+    percentage = 0
+    # Get all list of the folder we have in database
+    list_values = databaseTourBlink.child("Items").child(folder).get()
+    #Download from storage in firebase
+    for key, list_item in list_values.__dict__.iteritems():
+        if key == "pyres":
+            for item in list_item:
+                number_item+=1
+                unique_id = str(item.key())
+                ext_item = str(item.val())[-5:]
+                name_item = str(item.val())[:19]
+                # This gave us the route in the database for the item
+                folderPathItem = storageTourBlink.child(str(item.val()))
+                # This method downloads the item and give a unique name for each of the items
+                folderPathItem.download(folder+"/"+name_item+unique_id+ext_item)
+                # Calculate the progress
+                #print str(calculate_progress(list_item,number_item))+"%"
+    print "The folder %s has been downloaded succesfully"%(folder)
+  print "All the download has been done Thank you!"  
+  
+#Get all the reference from the folder in the storage
+#Is store in an array nd we can initialize tis like folder_reference = []
 
-# print storageTourBlink.child("20170110_013639_SM-G900M/14/IMG20170114_222812.jpg").get_url()
-# esta variable se necesita para algunas cosas ""user['idToken']""
+folder_reference = get_all_ref_folder()
+
+# Download all the files from the folders stored in firebase using the reference fro the database
+download_from_storage(folder_reference)
+
+raw_input("Press enter to continue...")
