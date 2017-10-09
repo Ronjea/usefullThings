@@ -1,2 +1,2 @@
 # usefullThings
-Two guys programming usefull things
+Little scripts to make your life easier
