@@ -59,7 +59,7 @@ def download_from_storage(folders):
                 folderPathItem.download(folder+"/"+name_item+unique_id+ext_item)
                 # Calculate the progress
                 #print str(calculate_progress(list_item,number_item))+"%"
-    print "The folder %s has been downloaded succesfully"%(folder)
+    print "The folder %s has been downloaded successfully"%(folder)
   print "All the download has been done Thank you!"  
   
 #Get all the reference from the folder in the storage
