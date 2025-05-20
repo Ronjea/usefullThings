@@ -67,7 +67,7 @@ def download_from_storage(folders):
   print "All the download has been done Thank you!"  
   
 #Get all the reference from the folder in the storage
-#Is store in an array nd we can initialize tis like folder_reference = []
+# It is stored in an array; we can initialize it like: folder_reference = []
 
 folder_reference = get_all_ref_folder()
 
