@@ -21,7 +21,7 @@ storageYourFirebase = firebase.storage()
 
 # def for calculate_progress in the download
 def calculate_progress(list_of_item, number_item):
-    progress = float(number_item)/(len(list_item))*100
+    progress = float(number_item) / len(list_of_item) * 100
     return progress
 #List of values will be pulled from the database
 #
